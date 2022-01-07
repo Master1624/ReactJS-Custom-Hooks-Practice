@@ -7,30 +7,26 @@ import useRequest from "./components/hooks/use-request";
 function App() {
 	const [tasks, setTasks] = useState([]);
 
-	const transformTasks = (tasksObj) => {
-		const loadedTasks = [];
-
-		for (const taskKey in tasksObj) {
-			loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
-		}
-
-		setTasks(loadedTasks);
-	};
-
-	const {
-		isLoading,
-		error,
-		sendRequest: fetchTasks,
-	} = useRequest(
-		{
-			url: "https://react-http-d6d36-default-rtdb.firebaseio.com/tasks.json",
-		},
-		transformTasks,
-	);
+	const { isLoading, error, sendRequest: fetchTasks } = useRequest();
 
 	useEffect(() => {
-		fetchTasks();
-	}, []);
+		const transformTasks = (tasksObj) => {
+			const loadedTasks = [];
+
+			for (const taskKey in tasksObj) {
+				loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+			}
+
+			setTasks(loadedTasks);
+		};
+
+		fetchTasks(
+			{
+				url: "https://react-http-d6d36-default-rtdb.firebaseio.com/tasks.json",
+			},
+			transformTasks,
+		);
+	}, [fetchTasks]);
 
 	const taskAddHandler = (task) => {
 		setTasks((prevTasks) => prevTasks.concat(task));
